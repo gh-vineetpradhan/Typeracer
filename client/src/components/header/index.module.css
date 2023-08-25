@@ -1,0 +1,25 @@
+.header {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  padding: 0 2rem;
+  background-color: white;
+  border-bottom: 2px solid gainsboro;
+  flex-shrink: 0;
+}
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: default;
+}
+.title > span {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+@media (width<300px) {
+  .title > span {
+    display: none;
+  }
+}
