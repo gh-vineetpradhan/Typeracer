@@ -3,6 +3,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 require("dotenv").config();
 const cors = require("cors");
+const paragraphs = require("./public/paragraphs.json");
 
 const app = express();
 const server = http.createServer(app);
@@ -15,9 +16,11 @@ app.use(cors({ origin: process.env.FRONTEND_URL }));
 const PORT = 5000;
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
+  socket.on("generate-paragraph", () => {
+    socket.emit(
+      "paragraph-generated",
+      paragraphs[Math.floor(Math.random() * 200)]
+    );
   });
 });
 

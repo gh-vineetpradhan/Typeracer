@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import socket from "../../socket";
 
 import Paragraph from "../../components/paragraph";
 import Timer from "../../components/timer";
@@ -12,13 +13,19 @@ export default function Practice() {
   const [time, setTime] = useState(0); /* in seconds */
   const [incorrect, setIncorrect] = useState(0);
   const [finished, setFinished] = useState(0);
-  const charArr = useMemo(
-    () =>
-      "A paragraph is a series of sentences that are organized and coherent, and are all related to a single topic. Almost every piece of writing you do that is longer than a few sentences should be organized into paragraphs.".split(
-        ""
-      ),
-    []
-  );
+  const [charArr, setCharArr] = useState([]);
+
+  useEffect(() => {
+    socket.emit("generate-paragraph");
+  }, []);
+  useEffect(() => {
+    socket.on("paragraph-generated", (paragraph) => {
+      setCharArr(paragraph.split(""));
+    });
+    return () => {
+      socket.removeAllListeners("paragraph-generated");
+    };
+  }, []);
 
   return (
     <div className={styles.wrapper}>
@@ -32,16 +39,18 @@ export default function Practice() {
       </div>
       <div>
         <div className="card">
-          <Paragraph
-            indexCursor={indexCursor}
-            correctCursor={correctCursor}
-            setIndexCursor={setIndexCursor}
-            setCorrectCursor={setCorrectCursor}
-            charArr={charArr}
-            finished={finished}
-            setFinished={setFinished}
-            setIncorrect={setIncorrect}
-          />
+          {charArr.length ? (
+            <Paragraph
+              indexCursor={indexCursor}
+              correctCursor={correctCursor}
+              setIndexCursor={setIndexCursor}
+              setCorrectCursor={setCorrectCursor}
+              charArr={charArr}
+              finished={finished}
+              setFinished={setFinished}
+              setIncorrect={setIncorrect}
+            />
+          ) : null}
         </div>
       </div>
       <div>
