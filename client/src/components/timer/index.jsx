@@ -25,7 +25,7 @@ export default function Timer(props) {
         "--dash-offset",
         circleRef.current.getTotalLength() -
           circleRef.current.getTotalLength() *
-            (props.correctCursor / props.total)
+            ((props.correctCursor + 1) / props.total)
       );
     if (!intervalRef.current && props.correctCursor > -1)
       intervalRef.current = setInterval(
@@ -38,7 +38,7 @@ export default function Timer(props) {
   }, [props.finished]);
 
   return (
-    <div className={`${styles.timer}`}>
+    <div className={`${styles.timer} card`}>
       <div
         className={styles.time}
         style={{

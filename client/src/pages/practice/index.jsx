@@ -1,14 +1,16 @@
 import { useMemo, useState } from "react";
 
 import Paragraph from "../../components/paragraph";
+import Timer from "../../components/timer";
+import Report from "../../components/report";
 
 import styles from "./index.module.css";
-import Timer from "../../components/timer";
 
 export default function Practice() {
   const [indexCursor, setIndexCursor] = useState(-1);
   const [correctCursor, setCorrectCursor] = useState(-1);
   const [time, setTime] = useState(0); /* in seconds */
+  const [incorrect, setIncorrect] = useState(0);
   const [finished, setFinished] = useState(0);
   const charArr = useMemo(
     () =>
@@ -21,6 +23,14 @@ export default function Practice() {
   return (
     <div className={styles.wrapper}>
       <div>
+        <Report
+          finished={finished}
+          textLength={charArr.length}
+          time={time}
+          incorrect={incorrect}
+        />
+      </div>
+      <div>
         <div className="card">
           <Paragraph
             indexCursor={indexCursor}
@@ -30,20 +40,19 @@ export default function Practice() {
             charArr={charArr}
             finished={finished}
             setFinished={setFinished}
+            setIncorrect={setIncorrect}
           />
         </div>
       </div>
       <div>
-        <div className="card">
-          <Timer
-            correctCursor={correctCursor}
-            indexCursor={indexCursor}
-            total={charArr.length}
-            time={time}
-            setTime={setTime}
-            finished={finished}
-          />
-        </div>
+        <Timer
+          correctCursor={correctCursor}
+          indexCursor={indexCursor}
+          total={charArr.length}
+          time={time}
+          setTime={setTime}
+          finished={finished}
+        />
       </div>
     </div>
   );

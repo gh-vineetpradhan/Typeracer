@@ -25,6 +25,8 @@ export default function Paragraph(props) {
           if (props.correctCursor === props.charArr.length - 2)
             props.setFinished(1);
         }
+      } else if (props.textArr?.[props.index] !== e.key) {
+        props.setIncorrect((prev) => prev + 1);
       }
     };
     if (!props.finished) document.body.addEventListener("keydown", el);
