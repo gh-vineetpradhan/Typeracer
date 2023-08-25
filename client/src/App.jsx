@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import "./socket";
 
 import Home from "./pages/home";
 import Header from "./components/header";
