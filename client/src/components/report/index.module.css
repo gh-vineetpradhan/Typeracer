@@ -3,7 +3,6 @@
   flex-direction: column;
   gap: 0.6rem;
   width: 200px;
-  box-sizing: border-box;
 }
 .details > header {
   font-weight: 600;

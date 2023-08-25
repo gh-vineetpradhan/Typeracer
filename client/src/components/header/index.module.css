@@ -1,5 +1,6 @@
 .header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   height: 60px;
   padding: 0 2rem;
@@ -18,8 +19,38 @@
   font-weight: 700;
 }
 
+.leaveBtn {
+  color: black;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 0.1rem;
+  text-decoration: none;
+}
+.leaveBtn > span:nth-child(1) {
+  font-size: 1.2rem;
+}
+.leaveBtn::before {
+  transition: 0.15s transform;
+  content: "";
+  width: 100%;
+  position: absolute;
+  height: 1.5px;
+  background-color: black;
+  bottom: -1px;
+  transform: scaleX(0);
+}
+.leaveBtn:hover::before {
+  transform: scaleX(1);
+}
+
 @media (width<300px) {
   .title > span {
+    display: none;
+  }
+  .leaveBtn > span:nth-child(2) {
     display: none;
   }
 }
