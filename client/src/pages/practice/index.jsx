@@ -16,8 +16,10 @@ export default function Practice() {
   const [charArr, setCharArr] = useState([]);
 
   useEffect(() => {
-    socket.emit("generate-paragraph");
-  }, []);
+    if (!charArr.length) {
+      socket.emit("generate-paragraph");
+    }
+  }, [charArr.length]);
   useEffect(() => {
     socket.on("paragraph-generated", (paragraph) => {
       setCharArr(paragraph.split(""));
@@ -26,6 +28,15 @@ export default function Practice() {
       socket.removeAllListeners("paragraph-generated");
     };
   }, []);
+
+  const resetParagraphHandler = () => {
+    setIndexCursor(-1);
+    setCorrectCursor(-1);
+    setTime(0);
+    setIncorrect(0);
+    setFinished(0);
+    setCharArr([]);
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -38,18 +49,28 @@ export default function Practice() {
         />
       </div>
       <div>
-        <div className="card">
+        <div className={`card ${styles.paragraphCard}`}>
           {charArr.length ? (
-            <Paragraph
-              indexCursor={indexCursor}
-              correctCursor={correctCursor}
-              setIndexCursor={setIndexCursor}
-              setCorrectCursor={setCorrectCursor}
-              charArr={charArr}
-              finished={finished}
-              setFinished={setFinished}
-              setIncorrect={setIncorrect}
-            />
+            <>
+              <Paragraph
+                indexCursor={indexCursor}
+                correctCursor={correctCursor}
+                setIndexCursor={setIndexCursor}
+                setCorrectCursor={setCorrectCursor}
+                charArr={charArr}
+                finished={finished}
+                setFinished={setFinished}
+                setIncorrect={setIncorrect}
+              />
+              <div className={styles.paragraphCardFooter}>
+                <button
+                  className={styles.restartBtn}
+                  onClick={() => resetParagraphHandler()}
+                >
+                  Reset
+                </button>
+              </div>
+            </>
           ) : null}
         </div>
       </div>

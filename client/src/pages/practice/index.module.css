@@ -15,6 +15,17 @@
   font-weight: 500;
 }
 
+.paragraphCardFooter {
+  display: flex;
+  border-top: 1px solid black;
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+}
+.restartBtn {
+  margin-left: auto;
+  padding: 0.2rem 0.6rem;
+}
+
 @media (width<1000px) {
   .wrapper {
     display: grid;
