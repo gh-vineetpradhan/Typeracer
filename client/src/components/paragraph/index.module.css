@@ -1,6 +1,9 @@
 .wrapper {
   max-width: 500px;
 }
+.character {
+  user-select: none;
+}
 .correct {
   background-color: #a0ffa0;
 }
