@@ -6,12 +6,7 @@
   margin-top: 1rem;
 }
 .card {
-  display: flex;
-  flex-direction: column;
   width: min(330px, 95%);
-  border: 2px solid rgb(196, 196, 196);
-  border-radius: 0.3rem;
-  padding: 0.7rem 1rem;
 }
 .cardHeader {
   font-size: 1.1rem;

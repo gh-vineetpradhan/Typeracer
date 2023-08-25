@@ -1,0 +1,15 @@
+.wrapper {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+.wrapper > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.wrapper > div > :global(.card) {
+  font-size: 0.9rem;
+  font-weight: 500;
+}

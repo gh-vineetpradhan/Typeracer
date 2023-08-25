@@ -1,0 +1,9 @@
+.wrapper {
+  max-width: 500px;
+}
+.correct {
+  background-color: #a0ffa0;
+}
+.incorrect {
+  background-color: #ff8b8b;
+}

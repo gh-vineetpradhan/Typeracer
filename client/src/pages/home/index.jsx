@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <main className={styles.wrapper}>
-      <div className={`${styles.card}`}>
+      <div className={`${styles.card} card`}>
         <input
           type="text"
           placeholder="Enter Username"
@@ -36,19 +36,19 @@ export default function Home() {
           Save
         </button>
       </div>
-      <div className={`${styles.card}`}>
+      <div className={`${styles.card} card`}>
         <div className={styles.cardHeader}>Play Globally</div>
         <div className={styles.cardDescription}>
           Improve your typing speed by racing against people around the world.
         </div>
         <button onClick={() => navigate("/global")}>Start Matchmaking</button>
       </div>
-      <div className={`${styles.card}`}>
+      <div className={`${styles.card} card`}>
         <div className={styles.cardHeader}>Typing Test</div>
         <div className={styles.cardDescription}>Improve your typing skills</div>
         <button onClick={() => navigate("/practice")}>Practice Yourself</button>
       </div>
-      <div className={`${styles.card}`}>
+      <div className={`${styles.card} card`}>
         <div className={styles.cardHeader}>Race your friends</div>
         <div className={styles.cardDescription}>
           Create your own racetrack and play with friends
