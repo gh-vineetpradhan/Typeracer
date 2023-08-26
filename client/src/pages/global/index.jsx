@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import socket from "../../socket";
 
 import Paragraph from "../../components/paragraph";
-import Timer from "../../components/timer";
+import Timer from "../../components/multiplayerTimer";
 import Report from "../../components/report";
 
 import styles from "../practice/index.module.css";
 
-export default function Global() {
+export default function Global(props) {
   const [indexCursor, setIndexCursor] = useState(-1);
   const [correctCursor, setCorrectCursor] = useState(-1);
   const [time, setTime] = useState(0); /* in seconds */
@@ -19,11 +19,14 @@ export default function Global() {
   useEffect(() => {
     socket.emit("add-to-global", localStorage.getItem("username"));
     socket.on("added-to-game", ({ players, paragraph }) => {
-      setPlayers(players);
+      setPlayers(players.map((p) => ({ id: p[0], username: p[1] || p[0] })));
       setCharArr(paragraph.split(""));
     });
     socket.on("player-joined", (player) => {
-      setPlayers((prev) => [...prev, player]);
+      setPlayers((prev) => [
+        ...prev,
+        { id: player[0], username: player[1] || player[0] },
+      ]);
     });
     return () => {
       socket.removeAllListeners("added-to-game");
@@ -60,14 +63,7 @@ export default function Global() {
         </div>
       </div>
       <div>
-        <Timer
-          correctCursor={correctCursor}
-          indexCursor={indexCursor}
-          total={charArr.length}
-          time={time}
-          setTime={setTime}
-          finished={finished}
-        />
+        <Timer players={players} time={time} socketId={props.socketId} />
       </div>
     </div>
   );

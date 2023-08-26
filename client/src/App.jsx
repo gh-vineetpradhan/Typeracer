@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import "./socket";
+import { useEffect, useState } from "react";
+import socket from "./socket";
 
 import Home from "./pages/home";
 import Header from "./components/header";
@@ -10,13 +11,21 @@ import PageNotFound from "./pages/pageNotFound.jsx";
 import "./index.css";
 
 export default function App() {
+  const [socketId, setSocketId] = useState();
+  useEffect(() => {
+    socket.on("socketId", (id) => setSocketId(id));
+    return () => {
+      socket.removeEventListener("socketId");
+    };
+  }, []);
+
   return (
     <>
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/practice" element={<Practice />} />
-        <Route path="/global" element={<Global />} />
+        <Route path="/global" element={<Global socketId={socketId} />} />
         <Route path="/*" element={<PageNotFound />} />
       </Routes>
     </>

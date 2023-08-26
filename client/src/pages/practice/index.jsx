@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import socket from "../../socket";
 
 import Paragraph from "../../components/paragraph";
-import Timer from "../../components/timer";
+import Timer from "../../components/singleplayerTimer";
 import Report from "../../components/report";
 
 import styles from "./index.module.css";

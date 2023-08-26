@@ -31,6 +31,7 @@ const joinRoom = (socket, room) => {
 };
 
 io.on("connection", (socket) => {
+  socket.emit("socketId", socket.id);
   socket.on("generate-paragraph", () => {
     socket.emit(
       "paragraph-generated",

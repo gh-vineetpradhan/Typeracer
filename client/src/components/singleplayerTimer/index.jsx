@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import styles from "./index.module.css";
 
-export default function Timer(props) {
+export default function SinglePlayerTimer(props) {
   const circleRef = useRef(null);
   const intervalRef = useRef(null);
 
