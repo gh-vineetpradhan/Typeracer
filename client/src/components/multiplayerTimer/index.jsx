@@ -5,7 +5,14 @@ import styles from "./index.module.css";
 export default function MultiplayerTimer(props) {
   return (
     <div className={`${styles.wrapper} card`}>
-      <div className={styles.timer}>
+      <div
+        className={styles.timer}
+        style={{
+          backgroundColor: props.finished
+            ? "rgb(84 255 84)"
+            : "rgba(0, 0, 0, 0.11)",
+        }}
+      >
         {Math.floor(props.time / 60)}:
         {props.time % 60 < 10 ? `0${props.time % 60}` : props.time % 60}
       </div>

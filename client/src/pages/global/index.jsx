@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import socket from "../../socket";
 
 import Paragraph from "../../components/paragraph";
@@ -15,12 +15,24 @@ export default function Global(props) {
   const [finished, setFinished] = useState(0);
   const [charArr, setCharArr] = useState([]);
   const [players, setPlayers] = useState([]);
+  const [countdown, setCountdown] = useState(0);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
+    if (finished) {
+      clearInterval(intervalRef.current);
+    }
+  }, [finished]);
+  useEffect(() => {
     socket.emit("add-to-global", localStorage.getItem("username"));
-    socket.on("added-to-game", ({ players, paragraph }) => {
+    socket.on("added-to-game", ({ players, paragraph, roomId }) => {
       setPlayers(players.map((p) => ({ id: p[0], username: p[1] || p[0] })));
       setCharArr(paragraph.split(""));
+      setCountdown(60 - Math.floor((new Date().getTime() - roomId) / 1000));
+      intervalRef.current = setInterval(
+        () => setCountdown((prev) => prev - 1),
+        1000
+      );
     });
     socket.on("player-joined", (player) => {
       setPlayers((prev) => [
@@ -38,6 +50,14 @@ export default function Global(props) {
       socket.removeAllListeners("player-left");
     };
   }, []);
+  useEffect(() => {
+    if (countdown === 0 && intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(() => {
+        setTime((prev) => prev + 1);
+      }, 1000);
+    }
+  }, [countdown]);
 
   return (
     <div className={styles.wrapper}>
@@ -51,7 +71,7 @@ export default function Global(props) {
       </div>
       <div>
         <div className={`card ${styles.paragraphCard}`}>
-          {charArr.length ? (
+          {charArr.length && !countdown ? (
             <>
               <Paragraph
                 indexCursor={indexCursor}
@@ -65,10 +85,23 @@ export default function Global(props) {
               />
             </>
           ) : null}
+          {countdown ? (
+            <span className={styles.paragraphCardFooter}>
+              Race starts in : 00:
+              {countdown < 10 ? `0${countdown % 60}` : countdown}
+            </span>
+          ) : (
+            <span className={styles.paragraphCardFooter}>Race Started</span>
+          )}
         </div>
       </div>
       <div>
-        <Timer players={players} time={time} socketId={props.socketId} />
+        <Timer
+          players={players}
+          time={time}
+          socketId={props.socketId}
+          finished={finished}
+        />
       </div>
     </div>
   );

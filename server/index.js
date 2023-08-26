@@ -30,6 +30,7 @@ const joinRoom = (socket, room) => {
       pl,
       players.get(pl),
     ]),
+    roomId: room,
     paragraph: paragraphs[room % 200],
   });
   socket.to(room).emit("player-joined", [socket.id, players.get(socket.id)]);
