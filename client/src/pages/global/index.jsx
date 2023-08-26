@@ -17,16 +17,30 @@ export default function Global(props) {
   const [players, setPlayers] = useState([]);
   const [countdown, setCountdown] = useState(0);
   const intervalRef = useRef(null);
+  const [roomId, setRoomId] = useState(0);
 
   useEffect(() => {
     if (finished) {
+      socket.emit("finished", {
+        roomId,
+      });
       clearInterval(intervalRef.current);
+    } else {
+      if (charArr?.length) {
+        socket.emit("set-progress", {
+          progress: (100 * correctCursor) / charArr.length,
+          roomId,
+        });
+      }
     }
-  }, [finished]);
+  }, [correctCursor, finished]);
   useEffect(() => {
     socket.emit("add-to-global", localStorage.getItem("username"));
     socket.on("added-to-game", ({ players, paragraph, roomId }) => {
-      setPlayers(players.map((p) => ({ id: p[0], username: p[1] || p[0] })));
+      setRoomId(roomId);
+      setPlayers(
+        players.map((p) => ({ id: p[0], username: p[1] || p[0], progress: 0 }))
+      );
       setCharArr(paragraph.split(""));
       setCountdown(60 - Math.floor((new Date().getTime() - roomId) / 1000));
       intervalRef.current = setInterval(
@@ -37,8 +51,20 @@ export default function Global(props) {
     socket.on("player-joined", (player) => {
       setPlayers((prev) => [
         ...prev,
-        { id: player[0], username: player[1] || player[0] },
+        { id: player[0], username: player[1] || player[0], progress: 0 },
       ]);
+    });
+    socket.on("set-progress", (obj) => {
+      setPlayers((prev) =>
+        prev.map((p) =>
+          obj.player === p.id ? { ...p, progress: obj.progress } : p
+        )
+      );
+    });
+    socket.on("finished", ({ id }) => {
+      setPlayers((prev) =>
+        prev.map((p) => (id === p.id ? { ...p, progress: 100 } : p))
+      );
     });
     socket.on("player-left", (id) => {
       setPlayers((prev) => prev.filter((x) => x.id !== id));
@@ -101,6 +127,8 @@ export default function Global(props) {
           time={time}
           socketId={props.socketId}
           finished={finished}
+          correctCursor={correctCursor + 1}
+          total={charArr.length}
         />
       </div>
     </div>

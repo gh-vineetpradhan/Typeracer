@@ -19,13 +19,50 @@ export default function MultiplayerTimer(props) {
       <div className={styles.players}>
         {props.players.map((p, i) => (
           <div className={styles.player} key={i}>
-            <span>
-              {p.username}
-              {props.socketId === p.id ? "(You)" : ""}
-            </span>
-            <div className={styles.progressBar}>
-              <div className={styles.progress}></div>
-            </div>
+            {props.socketId === p.id ? (
+              <>
+                <span>{p.username}(You)</span>
+                <div
+                  className={styles.progressBar}
+                  style={{
+                    border: `2px solid ${
+                      props.finished ? "rgb(84 255 84)" : "black"
+                    }`,
+                  }}
+                >
+                  <div
+                    className={styles.progress}
+                    style={{
+                      width: `${(100 * props.correctCursor) / props.total}%`,
+                      backgroundColor: props.finished
+                        ? "rgb(84 255 84)"
+                        : "black",
+                    }}
+                  ></div>
+                </div>
+              </>
+            ) : (
+              <>
+                <span>{p.username}</span>
+                <div
+                  className={styles.progressBar}
+                  style={{
+                    border: `2px solid ${
+                      p.progress === 100 ? "rgb(84 255 84)" : "black"
+                    }`,
+                  }}
+                >
+                  <div
+                    className={styles.progress}
+                    style={{
+                      width: `${p.progress}%`,
+                      backgroundColor:
+                        p.progress === 100 ? "rgb(84 255 84)" : "black",
+                    }}
+                  ></div>
+                </div>
+              </>
+            )}
           </div>
         ))}
       </div>

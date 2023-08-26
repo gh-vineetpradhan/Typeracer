@@ -78,6 +78,16 @@ io.on("connection", (socket) => {
       }
     }
   });
+  socket.on("set-progress", (obj) => {
+    socket
+      .to(obj.roomId)
+      .emit("set-progress", { progress: obj.progress, player: socket.id });
+  });
+  socket.on("finished", (obj) => {
+    socket.to(obj.roomId).emit("finished", {
+      id: socket.id,
+    });
+  });
   socket.on("leave-room", () => {
     leaveRoom(socket);
     socket.leave(getRoom(socket.rooms.values()));
