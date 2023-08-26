@@ -21,7 +21,10 @@ export default function MultiplayerTimer(props) {
           <div className={styles.player} key={i}>
             {props.socketId === p.id ? (
               <>
-                <span>{p.username}(You)</span>
+                <div className={styles.username}>
+                  <span>{p.username}</span>
+                  <span>(You)</span>
+                </div>
                 <div
                   className={styles.progressBar}
                   style={{
@@ -43,7 +46,9 @@ export default function MultiplayerTimer(props) {
               </>
             ) : (
               <>
-                <span>{p.username}</span>
+                <div className={styles.username}>
+                  <span>{p.username}</span>
+                </div>
                 <div
                   className={styles.progressBar}
                   style={{

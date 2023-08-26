@@ -86,11 +86,14 @@ io.on("connection", (socket) => {
   socket.on("finished", (obj) => {
     socket.to(obj.roomId).emit("finished", {
       id: socket.id,
+      time: obj.time,
+      username: players.get(socket.id) || socket.id,
     });
   });
   socket.on("leave-room", () => {
     leaveRoom(socket);
     socket.leave(getRoom(socket.rooms.values()));
+    players.delete(socket.id);
   });
   socket.on("disconnecting", () => {
     leaveRoom(socket);

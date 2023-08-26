@@ -1,0 +1,38 @@
+.wrapper {
+  gap: 0.3rem;
+  width: 200px;
+}
+.header {
+  font-weight: 600;
+  font-size: 1.2rem;
+  border-bottom: 2px solid;
+}
+.table {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background-color: grey;
+  gap: 2px;
+  border: 2px solid grey;
+  border-radius: 0.25rem;
+}
+.table > div {
+  padding: 0.3rem;
+  background-color: white;
+  text-align: center;
+}
+.username {
+  display: flex;
+  overflow: hidden;
+}
+.username > span:nth-child(1) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+@media (width<750px) {
+  .wrapper {
+    order: 2;
+  }
+}

@@ -14,9 +14,16 @@
   flex-direction: column;
   gap: 0.4rem;
 }
-.player > span {
+.username {
   font-size: 0.9rem;
   font-weight: 500;
+  overflow: hidden;
+  display: flex;
+}
+.username > span:nth-child(1) {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .progressBar {
   border: 1px solid;

@@ -4,6 +4,7 @@ import socket from "../../socket";
 import Paragraph from "../../components/paragraph";
 import Timer from "../../components/multiplayerTimer";
 import Report from "../../components/report";
+import Leaderboard from "../../components/leaderBoard";
 
 import styles from "../practice/index.module.css";
 
@@ -18,13 +19,23 @@ export default function Global(props) {
   const [countdown, setCountdown] = useState(0);
   const intervalRef = useRef(null);
   const [roomId, setRoomId] = useState(0);
+  const [leaderboard, setLeaderboard] = useState([]);
 
   useEffect(() => {
     if (finished) {
       socket.emit("finished", {
         roomId,
+        time: new Date().getTime(),
       });
       clearInterval(intervalRef.current);
+      setLeaderboard((prev) => [
+        ...prev,
+        {
+          id: props.socketId,
+          time: new Date().getTime(),
+          username: localStorage.getItem("username") || props.socketId,
+        },
+      ]);
     } else {
       if (charArr?.length) {
         socket.emit("set-progress", {
@@ -61,9 +72,14 @@ export default function Global(props) {
         )
       );
     });
-    socket.on("finished", ({ id }) => {
+    socket.on("finished", ({ id, time, username }) => {
       setPlayers((prev) =>
         prev.map((p) => (id === p.id ? { ...p, progress: 100 } : p))
+      );
+      setLeaderboard((prev) =>
+        [...prev, { time, id, username: username }].sort(
+          (a, b) => a.time - b.time
+        )
       );
     });
     socket.on("player-left", (id) => {
@@ -73,6 +89,8 @@ export default function Global(props) {
       socket.emit("leave-room");
       socket.removeAllListeners("added-to-game");
       socket.removeAllListeners("player-joined");
+      socket.removeAllListeners("set-progress");
+      socket.removeAllListeners("finished");
       socket.removeAllListeners("player-left");
     };
   }, []);
@@ -93,6 +111,11 @@ export default function Global(props) {
           textLength={charArr.length}
           time={time}
           incorrect={incorrect}
+        />
+        <Leaderboard
+          leaderboard={leaderboard}
+          socketId={props.socketId}
+          startingTime={roomId}
         />
       </div>
       <div>
