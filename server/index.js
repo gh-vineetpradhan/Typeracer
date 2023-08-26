@@ -17,7 +17,12 @@ const PORT = 5000;
 
 let currGlobalRoom = null;
 const players = new Map();
+const openGlobalRoom = new Set();
 
+const getRoom = (it) => {
+  it.next();
+  return it.next().value;
+};
 const joinRoom = (socket, room) => {
   socket.join(room);
   socket.emit("added-to-game", {
@@ -30,6 +35,16 @@ const joinRoom = (socket, room) => {
   socket.to(room).emit("player-joined", [socket.id, players.get(socket.id)]);
 };
 
+const leaveRoom = (socket) => {
+  const room = getRoom(socket.rooms.values());
+  socket.to(room).emit("player-left", socket.id);
+  const bool = openGlobalRoom.has(room);
+  if (bool && io.sockets.adapter.rooms.get(room)?.size === 1) {
+    openGlobalRoom.delete(room);
+  } else if (room && room !== currGlobalRoom && !bool) {
+    openGlobalRoom.add(room);
+  }
+};
 io.on("connection", (socket) => {
   socket.emit("socketId", socket.id);
   socket.on("generate-paragraph", () => {
@@ -46,9 +61,29 @@ io.on("connection", (socket) => {
     ) {
       joinRoom(socket, currGlobalRoom);
     } else {
-      currGlobalRoom = new Date().getTime();
-      joinRoom(socket, currGlobalRoom);
+      openGlobalRoom.forEach(
+        (val) =>
+          60000 - (new Date().getTime() - val) < 11000 &&
+          openGlobalRoom.delete(val)
+      );
+      const bool = openGlobalRoom.entries().next().value;
+      if (bool) {
+        currGlobalRoom = bool[0];
+        openGlobalRoom.delete(bool[0]);
+        joinRoom(socket, currGlobalRoom);
+      } else {
+        currGlobalRoom = new Date().getTime();
+        joinRoom(socket, currGlobalRoom);
+      }
     }
+  });
+  socket.on("leave-room", () => {
+    leaveRoom(socket);
+    socket.leave(getRoom(socket.rooms.values()));
+  });
+  socket.on("disconnecting", () => {
+    leaveRoom(socket);
+    players.delete(socket.id);
   });
 });
 

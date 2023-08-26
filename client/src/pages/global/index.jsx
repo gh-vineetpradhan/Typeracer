@@ -28,9 +28,14 @@ export default function Global(props) {
         { id: player[0], username: player[1] || player[0] },
       ]);
     });
+    socket.on("player-left", (id) => {
+      setPlayers((prev) => prev.filter((x) => x.id !== id));
+    });
     return () => {
+      socket.emit("leave-room");
       socket.removeAllListeners("added-to-game");
       socket.removeAllListeners("player-joined");
+      socket.removeAllListeners("player-left");
     };
   }, []);
 
