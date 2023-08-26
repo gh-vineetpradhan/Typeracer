@@ -6,7 +6,7 @@ import styles from "./index.module.css";
 export default function Home() {
   const navigate = useNavigate();
   const [username, setUsername] = React.useState(
-    localStorage.getItem("typeracer-username") || ""
+    localStorage.getItem("username") || ""
   );
   const [_bool, setBool] = React.useState(0); //Only to force rerender on saving username
 
@@ -22,13 +22,11 @@ export default function Home() {
         />
         <button
           className={`${
-            username === localStorage.getItem("typeracer-username")
-              ? "disabled-btn"
-              : ""
+            username === localStorage.getItem("username") ? "disabled-btn" : ""
           }`}
           onClick={() => {
-            if (username !== localStorage.getItem("typeracer-username")) {
-              localStorage.setItem("typeracer-username", username);
+            if (username !== localStorage.getItem("username")) {
+              localStorage.setItem("username", username);
               setBool((prev) => !prev);
             }
           }}
