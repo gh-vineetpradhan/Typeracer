@@ -25,14 +25,14 @@ export default function Global(props) {
     if (finished) {
       socket.emit("finished", {
         roomId,
-        time: new Date().getTime(),
+        time,
       });
       clearInterval(intervalRef.current);
       setLeaderboard((prev) => [
         ...prev,
         {
           id: props.socketId,
-          time: new Date().getTime(),
+          time,
           username: localStorage.getItem("username") || props.socketId,
         },
       ]);

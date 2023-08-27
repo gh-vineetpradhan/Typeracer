@@ -20,7 +20,7 @@ export default function Friendly(props) {
   const [players, setPlayers] = useState([]);
   const [countdown, setCountdown] = useState(0);
   const intervalRef = useRef(null);
-  const [roomId, setRoomId] = useState(0);
+  const [roomId, setRoomId] = useState("");
   const [leaderboard, setLeaderboard] = useState([]);
   //status: 0 = initial, 1 = countdown started, 2 = race started, 3 = housefull
   const [status, setStatus] = useState(0);
@@ -30,14 +30,14 @@ export default function Friendly(props) {
     if (finished) {
       socket.emit("finished", {
         roomId,
-        time: new Date().getTime(),
+        time,
       });
       clearInterval(intervalRef.current);
       setLeaderboard((prev) => [
         ...prev,
         {
           id: props.socketId,
-          time: new Date().getTime(),
+          time,
           username: localStorage.getItem("username") || props.socketId,
         },
       ]);
@@ -52,11 +52,11 @@ export default function Friendly(props) {
   }, [correctCursor, finished]);
   useEffect(() => {
     socket.emit("join-friendly", {
-      url: roomUrl,
+      roomId: roomUrl,
       username: localStorage.getItem("username"),
     });
-    socket.on("added-to-game", ({ id, players, paragraph }) => {
-      setRoomId(id);
+    socket.on("added-to-game", ({ roomId, players, paragraph }) => {
+      setRoomId(roomId);
       setPlayers(
         players.map((p) => ({ id: p[0], username: p[1] || p[0], progress: 0 }))
       );
@@ -74,6 +74,14 @@ export default function Friendly(props) {
           obj.player === p.id ? { ...p, progress: obj.progress } : p
         )
       );
+    });
+    socket.on("friendly-start-countdown", () => {
+      setCountdown(10);
+      intervalRef.current = setInterval(
+        () => setCountdown((prev) => prev - 1),
+        1000
+      );
+      setStatus(1);
     });
     socket.on("finished", ({ id, time, username }) => {
       setPlayers((prev) =>
@@ -98,12 +106,14 @@ export default function Friendly(props) {
       socket.removeAllListeners("set-progress");
       socket.removeAllListeners("finished");
       socket.removeAllListeners("player-left");
+      socket.removeAllListeners("friendly-start-countdown");
       socket.removeAllListeners("room-capacity-full");
     };
   }, []);
   useEffect(() => {
     if (countdown === 0 && intervalRef.current) {
       clearInterval(intervalRef.current);
+      setStatus(2);
       intervalRef.current = setInterval(() => {
         setTime((prev) => prev + 1);
       }, 1000);
@@ -125,7 +135,7 @@ export default function Friendly(props) {
         <Leaderboard
           leaderboard={leaderboard}
           socketId={props.socketId}
-          startingTime={roomId}
+          startingTime={roomId.split("-")[1]}
         />
       </div>
       <div>
@@ -143,6 +153,15 @@ export default function Friendly(props) {
                 setIncorrect={setIncorrect}
               />
             </>
+          ) : null}
+          {status === 1 ? (
+            <span className={styles.paragraphCardFooter}>
+              Race starts in : 00:
+              {countdown < 10 ? `0${countdown % 60}` : countdown}
+            </span>
+          ) : null}
+          {status === 2 ? (
+            <span className={styles.paragraphCardFooter}>Race Started</span>
           ) : null}
         </div>
         {status === 0 ? (

@@ -20,7 +20,7 @@ export default function Leaderboard(props) {
                   <span>{d.username}</span>
                 </div>
               )}
-              <div>{Math.floor((d.time - props.startingTime) / 1000)}s</div>
+              <div>{d.time}s</div>
             </Fragment>
           ))}
         </div>

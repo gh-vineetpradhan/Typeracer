@@ -92,21 +92,22 @@ io.on("connection", (socket) => {
   });
   socket.on("create-friendly", (username) => {
     players.set(socket.id, username);
-    const url = `${socket.id}-${new Date().getTime()}`;
-    socket.join(url);
+    const roomId = `${socket.id}-${new Date().getTime()}`;
+    socket.join(roomId);
     socket.emit("friendly-created", {
-      url,
-      paragraph: paragraphs[url.split("-")[url.split("-").length - 1] % 200],
+      roomId,
+      paragraph:
+        paragraphs[roomId.split("-")[roomId.split("-").length - 1] % 200],
     });
   });
-  socket.on("join-friendly", ({ url, username }) => {
+  socket.on("join-friendly", ({ roomId, username }) => {
     players.set(socket.id, username);
     if (
-      io.sockets.adapter.rooms.get(url)?.size < 4 &&
-      !friendlyRooms.get(url)
+      io.sockets.adapter.rooms.get(roomId)?.size < 4 &&
+      !friendlyRooms.get(roomId)
     ) {
-      socket.join(url);
-      joinRoom(socket, url);
+      socket.join(roomId);
+      joinRoom(socket, roomId);
     } else {
       socket.emit("room-capacity-full");
     }
@@ -115,6 +116,11 @@ io.on("connection", (socket) => {
     socket
       .to(obj.roomId)
       .emit("set-progress", { progress: obj.progress, player: socket.id });
+  });
+  socket.on("friendly-start-countdown", (room) => {
+    socket.emit("friendly-start-countdown");
+    socket.to(room).emit("friendly-start-countdown");
+    friendlyRooms.set(room, 1);
   });
   socket.on("finished", (obj) => {
     socket.to(obj.roomId).emit("finished", {
