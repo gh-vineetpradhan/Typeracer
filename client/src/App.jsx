@@ -6,6 +6,7 @@ import Home from "./pages/home";
 import Header from "./components/header";
 import Practice from "./pages/practice";
 import Global from "./pages/global";
+import Friendly from "./pages/friendly";
 import PageNotFound from "./pages/pageNotFound.jsx";
 
 import "./index.css";
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/practice" element={<Practice />} />
         <Route path="/global" element={<Global socketId={socketId} />} />
+        <Route path="/friendly" element={<Friendly socketId={socketId} />} />
         <Route path="/*" element={<PageNotFound />} />
       </Routes>
     </>

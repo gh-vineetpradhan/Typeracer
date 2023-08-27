@@ -78,6 +78,15 @@ io.on("connection", (socket) => {
       }
     }
   });
+  socket.on("create-friendly", (username) => {
+    players.set(socket.id, username);
+    const url = `${socket.id}-${new Date().getTime()}`;
+    socket.join(url);
+    socket.emit("friendly-created", {
+      url,
+      paragraph: paragraphs[url.split("-")[url.split("-").length - 1] % 200],
+    });
+  });
   socket.on("set-progress", (obj) => {
     socket
       .to(obj.roomId)
