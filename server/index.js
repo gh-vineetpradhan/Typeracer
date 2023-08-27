@@ -18,6 +18,7 @@ const PORT = 5000;
 let currGlobalRoom = null;
 const players = new Map();
 const openGlobalRoom = new Set();
+const friendlyRooms = new Map();
 
 const getRoom = (it) => {
   it.next();
@@ -31,7 +32,9 @@ const joinRoom = (socket, room) => {
       players.get(pl),
     ]),
     roomId: room,
-    paragraph: paragraphs[room % 200],
+    paragraph: Number.isInteger(room)
+      ? paragraphs[room % 200]
+      : paragraphs[room.split("-")[room.split("-").length - 1] % 200],
   });
   socket.to(room).emit("player-joined", [socket.id, players.get(socket.id)]);
 };
@@ -39,11 +42,20 @@ const joinRoom = (socket, room) => {
 const leaveRoom = (socket) => {
   const room = getRoom(socket.rooms.values());
   socket.to(room).emit("player-left", socket.id);
-  const bool = openGlobalRoom.has(room);
-  if (bool && io.sockets.adapter.rooms.get(room)?.size === 1) {
-    openGlobalRoom.delete(room);
-  } else if (room && room !== currGlobalRoom && !bool) {
-    openGlobalRoom.add(room);
+  if (typeof room === "string") {
+    if (
+      friendlyRooms.get(room) &&
+      io.sockets.adapter.rooms.get(room)?.size === 1
+    ) {
+      friendlyRooms.delete(room);
+    }
+  } else {
+    const bool = openGlobalRoom.has(room);
+    if (bool && io.sockets.adapter.rooms.get(room)?.size === 1) {
+      openGlobalRoom.delete(room);
+    } else if (room && room !== currGlobalRoom && !bool) {
+      openGlobalRoom.add(room);
+    }
   }
 };
 io.on("connection", (socket) => {
@@ -86,6 +98,18 @@ io.on("connection", (socket) => {
       url,
       paragraph: paragraphs[url.split("-")[url.split("-").length - 1] % 200],
     });
+  });
+  socket.on("join-friendly", ({ url, username }) => {
+    players.set(socket.id, username);
+    if (
+      io.sockets.adapter.rooms.get(url)?.size < 4 &&
+      !friendlyRooms.get(url)
+    ) {
+      socket.join(url);
+      joinRoom(socket, url);
+    } else {
+      socket.emit("room-capacity-full");
+    }
   });
   socket.on("set-progress", (obj) => {
     socket
